@@ -1,6 +1,7 @@
 package io.github.frant4nk.votebroadcaster.commands;
 
 import io.github.frant4nk.votebroadcaster.Votebroadcaster;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -8,10 +9,13 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 
 import java.util.Optional;
 
-public class VoteCommandConsole implements CommandExecutor
+public class VoteConsoleCommand implements CommandExecutor
 {
     private final Votebroadcaster plugin = Votebroadcaster.instance;
 
@@ -19,24 +23,33 @@ public class VoteCommandConsole implements CommandExecutor
     {
         return CommandSpec.builder()
                 .description(Text.of("Command con comunicate Vote Server and this server"))
-                .permission("votebroadcaster.command.admin.voteconsole")
+                .permission("votebroadcaster.admin.voteconsole")
                 .arguments(
                         GenericArguments.flags()
                         .valueFlag(GenericArguments.string(Text.of("player")), "-player")
                         .valueFlag(GenericArguments.string(Text.of("website")), "-website")
                         .buildWith(GenericArguments.none())
                 )
-                .executor(new VoteCommandConsole())
+                .executor(new VoteConsoleCommand())
                 .build();
     }
 
+    
     @Override
     public CommandResult execute(CommandSource src, CommandContext args)
     {
+        MessageChannel channel = Sponge.getServer().getBroadcastChannel();
         Optional<String> player = args.<String>getOne("player");
         Optional<String> website = args.<String>getOne("website");
 
-        src.sendMessage(Text.of(player.get() + " voted on " + website.get())); //Esto tiene que broadcastear a todos los sitios
-        return CommandResult.success();
+        //TODO hacer el mensaje a partir de la config
+
+        //player.get(), website.get()
+        Text prefix = Text.builder("[VOTE] ").color(TextColors.GOLD).style(TextStyles.BOLD).build();
+        Text message = Text.builder(player.get() + " thanks for your vote on " + website.get())
+                .color(TextColors.AQUA).style(TextStyles.RESET).build();
+
+        channel.send(Text.of(prefix.concat(message)));
+        return CommandResult.success(); //TODO dejar preparado con el votifier tan pronto como se pueda
     }
 }
