@@ -51,5 +51,8 @@ public class VoteConsoleCommand implements CommandExecutor
 
         channel.send(Text.of(prefix.concat(message)));
         return CommandResult.success(); //TODO dejar preparado con el votifier tan pronto como se pueda
+
+        //TODO hacer que desde el server del votifier se puedan añadir links u otras cosas de interes a las configs de todos los servers
+        //TODO basicamente que se pueda manejar la config desde alli, con lo cual el comando reload lo ejecutara el server de votifier tambien
     }
 }
