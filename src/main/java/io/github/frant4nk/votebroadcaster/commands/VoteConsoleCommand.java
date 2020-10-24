@@ -1,5 +1,6 @@
 package io.github.frant4nk.votebroadcaster.commands;
 
+import io.github.frant4nk.votebroadcaster.SQLUtil;
 import io.github.frant4nk.votebroadcaster.Votebroadcaster;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -39,20 +40,59 @@ public class VoteConsoleCommand implements CommandExecutor
     public CommandResult execute(CommandSource src, CommandContext args)
     {
         MessageChannel channel = Sponge.getServer().getBroadcastChannel();
+
         Optional<String> player = args.<String>getOne("player");
         Optional<String> website = args.<String>getOne("website");
 
-        //TODO hacer el mensaje a partir de la config
+        String msgBroadcast = plugin.getConfig().getNode("msgBroadcast").getString();
+        String replacedBroadcast = msgBroadcast.replace("%player", player.get()).replace("%website", website.get());
 
-        //player.get(), website.get()
-        Text prefix = Text.builder("[VOTE] ").color(TextColors.GOLD).style(TextStyles.BOLD).build();
-        Text message = Text.builder(player.get() + " thanks for your vote on " + website.get())
-                .color(TextColors.AQUA).style(TextStyles.RESET).build();
+        String votes = "";
 
-        channel.send(Text.of(prefix.concat(message)));
-        return CommandResult.success(); //TODO dejar preparado con el votifier tan pronto como se pueda
+        if(player.isPresent() && website.isPresent())
+        {
+            Text prefix = Text.builder("[VOTE] ").color(TextColors.GOLD).style(TextStyles.BOLD).build();
+            Text message = Text.builder(replacedBroadcast)
+                    .color(TextColors.AQUA).style(TextStyles.RESET).build();
 
-        //TODO hacer que desde el server del votifier se puedan añadir links u otras cosas de interes a las configs de todos los servers
-        //TODO basicamente que se pueda manejar la config desde alli, con lo cual el comando reload lo ejecutara el server de votifier tambien
+            channel.send(Text.of(prefix.concat(message)));
+            try {
+                SQLUtil.saveVote(player.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                votes = SQLUtil.getVotes(player.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            int goals = plugin.getConfig().getNode("goals").getInt();
+            for(int i = 1 ; i <= goals ; i++)
+            {
+                int meta = plugin.getConfig().getNode("votegoal", "goal" + i, "votes").getInt();
+                if(Integer.parseInt(votes) == meta)
+                {
+                    String msgGoal = plugin.getConfig().getNode("votegoal", "goal" + i, "msg").getString();
+                    String replacedMsgGoal = msgGoal.replace("%player", player.get());
+
+                    Text prefix2 = Text.builder("[VOTE] ").color(TextColors.GOLD).style(TextStyles.BOLD).build();
+                    Text message2 = Text.builder(replacedMsgGoal)
+                            .color(TextColors.AQUA).style(TextStyles.RESET).build();
+                    channel.send(Text.of(prefix2.concat(message2)));
+
+                    String cmd = plugin.getConfig().getNode("votegoal", "goal" + i, "command").getString();
+                    String replacedCMD = cmd.replace("%player", player.get());
+
+                    System.out.println(replacedCMD);
+                    Sponge.getCommandManager().process(Sponge.getServer().getConsole(), replacedCMD);
+                }
+            }
+
+            return CommandResult.success();
+        } else
+        {
+            src.sendMessage(Text.of("You forgot something!!"));
+            return CommandResult.success();
+        }
     }
 }

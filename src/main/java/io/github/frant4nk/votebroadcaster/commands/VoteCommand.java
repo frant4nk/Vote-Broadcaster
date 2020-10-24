@@ -1,7 +1,9 @@
 package io.github.frant4nk.votebroadcaster.commands;
 
 import io.github.frant4nk.votebroadcaster.Votebroadcaster;
+import io.github.frant4nk.votebroadcaster.commands.subcommands.vote.CountCommand;
 import io.github.frant4nk.votebroadcaster.commands.subcommands.vote.ShowCommand;
+import io.github.frant4nk.votebroadcaster.commands.subcommands.vote.TopCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -28,6 +30,8 @@ public class VoteCommand implements CommandExecutor
                 .permission("votebroadcaster.command.vote")
                 .executor(new VoteCommand())
                 .child(ShowCommand.getCommand(), "show", "s")
+                .child(CountCommand.getCommand(), "count", "c")
+                .child(TopCommand.getCommand(), "top", "t")
                 .build();
     }
 
@@ -58,9 +62,18 @@ public class VoteCommand implements CommandExecutor
         texts.add(Text.builder("").build()); //Para el estilo
         texts.add(Text.builder()
                 .onClick(TextActions.suggestCommand("/vote show"))
-                .onHover(TextActions.showText(Text.of("List all the websites")))
                 .color(TextColors.YELLOW)
-                .append(Text.of("   /vote show")) //one tab
+                .append(Text.of("   /vote show  - List all the websites")) //one tab
+                .build());
+        texts.add(Text.builder()
+                .onClick(TextActions.suggestCommand("/vote count"))
+                .color(TextColors.YELLOW)
+                .append(Text.of("   /vote count - List your total votes")) //one tab
+                .build());
+        texts.add(Text.builder()
+                .onClick(TextActions.suggestCommand("/vote top"))
+                .color(TextColors.YELLOW)
+                .append(Text.of("   /vote top    - List the Top 10")) //one tab
                 .build());
 
         return texts;

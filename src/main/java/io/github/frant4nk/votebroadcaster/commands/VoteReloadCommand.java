@@ -28,7 +28,7 @@ public class VoteReloadCommand implements CommandExecutor
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException
     {
         plugin.loadConfig();
-        src.sendMessage(Text.of("Loaded config.")); //TODO dar prefijo y color
+        src.sendMessage(Text.of("Loaded config."));
         return CommandResult.success();
     }
 }

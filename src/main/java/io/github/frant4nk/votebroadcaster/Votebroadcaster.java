@@ -39,6 +39,7 @@ public class Votebroadcaster
     private final Logger logger;
     private final Game game;
 
+
     @Inject
     @DefaultConfig(sharedRoot = true)
     private Path configPath;
@@ -82,7 +83,6 @@ public class Votebroadcaster
         Sponge.getCommandManager().register(this, VoteConsoleCommand.getCommand(), "voteconsole");
         Sponge.getCommandManager().register(this, VoteReloadCommand.getCommand(), "votereload");
         //TODO add ignore command
-        //TODO add database
     }
 
     public Logger getLogger()
