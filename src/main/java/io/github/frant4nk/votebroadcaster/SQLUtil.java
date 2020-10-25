@@ -25,6 +25,7 @@ public class SQLUtil
         return sql.getDataSource(jdbcUrl);
     }
 
+    /*
     public static void saveVote(String username) throws Exception {
         String uri = plugin.getConfig().getNode("database").getString();
         String sql = "INSERT INTO votes (username, dayvotes, totalvotes) VALUES (\"" + username + "\", 1, 1) ON DUPLICATE KEY UPDATE dayvotes = dayvotes + 1, totalvotes = totalvotes + 1;";
@@ -44,7 +45,7 @@ public class SQLUtil
             close();
         }
     }
-
+    */
     public static String getVotes(String username) throws Exception
     {
         String uri = plugin.getConfig().getNode("database").getString();

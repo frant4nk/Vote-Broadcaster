@@ -56,11 +56,17 @@ public class VoteConsoleCommand implements CommandExecutor
                     .color(TextColors.AQUA).style(TextStyles.RESET).build();
 
             channel.send(Text.of(prefix.concat(message)));
+
+            String regularVoteCommand = plugin.getConfig().getNode("regularVoteCommand").getString();
+            String replacedRegularVoteCommand = regularVoteCommand.replace("%player", player.get());
+            Sponge.getCommandManager().process(Sponge.getServer().getConsole(), replacedRegularVoteCommand);
+            /*
             try {
                 SQLUtil.saveVote(player.get());
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            */
             try {
                 votes = SQLUtil.getVotes(player.get());
             } catch (Exception e) {
@@ -83,7 +89,6 @@ public class VoteConsoleCommand implements CommandExecutor
                     String cmd = plugin.getConfig().getNode("votegoal", "goal" + i, "command").getString();
                     String replacedCMD = cmd.replace("%player", player.get());
 
-                    System.out.println(replacedCMD);
                     Sponge.getCommandManager().process(Sponge.getServer().getConsole(), replacedCMD);
                 }
             }
